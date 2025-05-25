@@ -1,0 +1,332 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>UmweltDetektor</title>
+<link href="环境csss.css" rel="stylesheet" type="text/css">
+<link href="环境js.js" type="text/javascript">
+</head>
+
+<body>
+<header>
+  <h3 style="color: #CFCED3; font-weight: bolder; text-align: left; font-size: 25px;">室内环境健康度智能诊断</h3>
+	<h5 class="index"><a href="UmweltDetektor.html" style="font-size: 16px; color: #CFCED3;">首页</a></h5>
+	<h5 class="book"><a href="page.html" style="font-size: 16px; color: #CFCED3;">诊断标准</a></h5>
+</header>
+<section class="table"> 
+<table width="1000" border="2" align="center">
+  <caption style="font-size: 25px; color: #2A2F33;">
+    <strong>环境实时数据监测</strong>
+  </caption>
+  <tbody>
+    <tr>
+      <th scope="col">&nbsp;温度(℃)</th>
+      <th scope="col">&nbsp;湿度(%)</th>
+      <th scope="col">&nbsp;光照强度(lx)</th>
+      <th scope="col">&nbsp;二氧化碳浓度(ppm)</th>
+      <th scope="col">&nbsp;是否检测到人</th>
+    </tr>
+    <tr>
+      <td>&nbsp;<input type="number" id="temperature" required></td>
+      <td>&nbsp;<input type="number" id="humidity" required></td>
+      <td>&nbsp;<input type="number" id="lux" required></td>
+      <td>&nbsp;<input type="number" id="co2" required></td>
+      <td>&nbsp;<input type="number" placeholder="请输入人数(个)" id="people" required></td>
+    </tr>
+  </tbody>
+</table>
+	<form>
+		<h3 style="color: #F0F8FF">您所在室内环境的占地面积</h3>
+		<input type="number" placeholder="请输入面积(平方米)" id="area" required>
+	</form>
+	<label for="use"><h3>此房间现在用于：</h3></label>
+	<select id="use">
+		<option value="normal">日常起居</option>
+		<option value="study">学习工作</option>
+</select>
+	<button class="generate" onclick="changeText()">点击生成测评结果</button>
+
+	</section>
+
+<section class="result" id="move">
+ <div class="slideshow" id="results"></div>
+	<!-- 半透明窗口 -->
+  <div class="floating-box">
+    <div class="text-content" id="dynamic-text">
+      等待生成结果……
+    </div>
+  </div>
+
+	</section>
+
+<footer>
+		<p style="font-family: Gotham, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 10px; text-align: center;">Umwelt Detektor 2025</p>
+	</footer>
+<script>
+	let envData = {
+  t: 0,
+  h: 0,
+  l: 0,
+  c: 0,
+  p: 0,
+  u: 'normal',
+  area: 0
+};
+
+// 收集输入数据
+function processInput() {
+  envData = {
+    t: parseFloat(document.getElementById("temperature").value) || 0,
+    h: parseFloat(document.getElementById("humidity").value) || 0,
+    l: parseFloat(document.getElementById("lux").value) || 0,
+    c: parseFloat(document.getElementById("co2").value) || 0,
+    p: parseFloat(document.getElementById("people").value) || 0,
+    u: document.getElementById("use").value,
+    area: parseFloat(document.getElementById("area").value) || 0
+  };
+}
+
+// 生成测评结果
+function changeText() {
+  processInput();
+const targetSection = document.getElementById('move');
+  if (targetSection) {
+    targetSection.scrollIntoView({ behavior: 'smooth' });
+  }
+  const textElement = document.getElementById("dynamic-text");
+  let content = "";
+//综合评分
+  let a1,a2,a3,a4,a5,s;
+	if (envData.t <= -12 || envData.t > 37) {
+  a1 = 0;
+} else if (envData.t > -12 && envData.t <= 4 || envData.t > 35 && envData.t <= 37) {
+  a1 = 1;
+} else if (envData.t > 4 && envData.t <= 10 || envData.t > 30 && envData.t <= 35) {
+  a1 = 2;
+} else if (envData.t > 10 && envData.t <= 14 || envData.t > 28 && envData.t <= 30) {
+  a1 = 3;
+} else if (envData.t > 14 && envData.t <= 18 || envData.t > 26 && envData.t <= 28) {
+  a1 = 4;
+} else {
+  a1 = 5;
+}
+	if(envData.h<=30 || envData.h<=100 && envData.h>65){
+		a2=1;
+	}else if(envData.h<=40 && envData.h>30 || envData.h<=65 && envData.h>60){
+		a2=3;
+	}else if(envData.h<=48 && envData.h>40 || envData.h<=60 && envData.h>52){
+		a2=4;
+	}else{
+		a2=5;
+	}
+	if(envData.u==='normal'){
+		if(envData.l<=35){
+			a3=0;
+		}else if(envData.l<=75 && envData.l>35 || envData.l>500){
+			a3=1;
+		}else if(envData.l<=100 && envData.l>75 || envData.l<=500 && envData.l>300){
+			a3=3;
+		}else{
+			a3=5;
+		}
+	}else{
+		if(envData.l<=75 || envData.l>1500){
+			a3=1;
+		}else if(envData.l<=150 && envData.l>75 || envData.l<=1500 && envData.l>1000){
+			a3=2;
+		}else if(envData.l<=250 && envData.l>150 || envData.l<=1000 && envData.l>600){
+			a3=3;
+		}else if(envData.l<=350 && envData.l>250 || envData.l<=600 && envData.l>550){
+			a3=4;
+		}else{
+			a3=5;
+		}
+	}
+	if(envData.area/envData.p<=2){
+		a4=1;
+	}else if(envData.area/envData.p<=3 && envData.area/envData.p>2){
+		a4=2;
+	}else if(envData.area/envData.p<=4 && envData.area/envData.p>3 || envData.area/envData.p<=9 && envData.area/envData.p>7){
+		a4=3;
+	}else if(envData.area/envData.p<=5 && envData.area/envData.p>4 || envData.area/envData.p<=7 && envData.area/envData.p>6){
+		a4=4;
+	}else{
+		a4=5;
+	}
+	if(envData.c<=200 || envData.c>1000){
+		a5=1;
+	}else if(envData.c<=350 && envData.c>200 || envData.c<=1000 && envData.c>800){
+		a5=3;
+	}else if(envData.c<=450 && envData.c>350 ||envData.c<=800 && envData.c>600){
+		a5=4;
+	}else{
+		a5=5;
+	}
+	s=a1*0.3+a2*0.2+a3*0.1+a4*0.2+a5*0.2
+	if(s<2){
+		content = `<span style="font-size:40px;color:red">您的房间健康度评分为：${s.toFixed(1)}，不适宜居住，下面为详细分析与意见：</span>`
+	}else if(s>=2 && s<3){
+		content =`<span style="font-size:40px;color:yellow">您的房间健康度评分为：${s.toFixed(1)}，需要改善，下面为详细分析与意见：</span>`
+	}else if(s>=3 && s<4){
+		content =`<span style="font-size:40px;color:#ade5fe">您的房间健康度评分为：${s.toFixed(1)}，良好，下面为详细分析与意见：</span>`
+	}else{
+		content =`<span style="font-size:40px;color:#c0d695">您的房间健康度评分为：${s.toFixed(1)}，优秀，下面为详细分析与意见：</span>`
+	}
+
+
+//温度测评
+  if (envData.t <= 4) {
+    content += "<span style='font-size:20px;color:red'>\n您的房间内温度过低</span>"
+	  if (envData.p>0){
+	  content +="\n可增加衣物保暖，使用电暖器等辅助加热设备，检查门窗密封，减少冷空气进入"
+  }else{
+	  content +="\n可将空调或暖气温度设置在能防止管道冻裂的较低温度，如 5℃左右"
+  }
+  } else if (envData.t <=14 && envData.t >4){
+    content += "\n<span style='font-size:20px;color:yellow'>您的房间内温度较低</span>";
+	  if (envData.p>0){
+	  content +="\n冬季时，可增加衣物保暖，使用电暖器等辅助加热设备，检查门窗密封，减少冷空气进入。夏季时可增添衣物，调高空调温度"
+  }else{
+	  content +="\n夏季时可将空调温度调至 26℃左右，既节能又能维持室内一定温度"
+  }
+  }else if(envData.t <=23 && envData.t >14){
+	  content+="\n<span style='font-size:20px;color:#ade5fe'>您的房间内温度较凉爽</span>";
+	   if (envData.p>0){
+	  content +="\n冬季时可增添衣物，调高空调温度"
+  }else{
+	  content +=""
+  }
+  }else if(envData.t <=26 && envData.t >23){
+	  content+="\n<span style='font-size:20px;color:#c0d695'>您的房间内温度很合适</span>"
+  }else if (envData.t <=31 && envData.t >26){
+	  content+="\n<span style='font-size:20px;color:yellow'>您的房间内温度较高</span>"
+	  if (envData.p>0 && envData.area<=20){
+	  content +="\n可减少衣物，使用风扇辅助散热"
+  }else if (envData.p>0 && envData.area>20){
+	  content +="\n可减少衣物，使用风扇辅助散热。冬天时可适当调低空调温度，同时打开门窗通风，加速空气流通散热"
+  }else {
+	  content +="\n可将空调温度设置为较低的维持温度，如 16℃左右"
+  }
+  }else {
+	  content+="<span style='font-size:20px;color:red'>\n您的房间内温度过高</span>"
+	  if (envData.p>0 && envData.area<=20){
+	  content +="\n可使用空调扇等，人应避免直吹空调风，适当补充水分"
+  }else if (envData.p>0 && envData.area>20){
+	  content +="\n大可用大功率空调制冷，配合使用风扇促进空气循环，人应，避免直吹空调风，适当补充水分"
+  }else {
+	  content +="\n可将空调设置为较高的节能温度，如 28℃"
+  }
+  }
+//湿度测评
+	if(envData.h<40){
+		content +="\n<span style='font-size:20px;color:yellow'>您的房间内湿度较低</span>\n可使用加湿器，根据房间面积选择合适容量的加湿器"
+		if (envData.p>0){
+	  content +="也可在室内放置水盆等增加湿度"
+  }else{
+	  content +="可让加湿器持续工作在较低档位"
+	}
+	}else if(envData.h>60){
+		content +="\n<span style='font-size:20px;color:yellow'>您的房间内湿度较高，请注意通风换气</span>"
+		if (envData.area>20){
+	  content +="\n您的房间较大，可选择功率大的除湿机进行除湿"
+  }else{
+	  content +="\n您的房间较小，可用干燥剂进行除湿"
+	}
+	}else{
+		content +="\n<span style='font-size:20px;color:#c0d695'>您的房间内湿度适宜</span>"
+	}
+	
+//光照强度测评
+	if(envData.u==='normal'){
+		if(envData.l<300){
+			content +="\n<span style='font-size:20px;color:yellow'>您的房间内光照较弱</span>\n可增加灯具数量或更换高瓦数灯泡，选择合适的照明布局,";
+			if(envData.p>0){
+				content +="确保活动区域光线充足"
+			}else{
+				content +="而此时房间内无人，因此可关闭大部分灯光，仅留少量夜灯"
+			}
+		}else if(envData.l>500){
+			content +="\n<span style='font-size:20px;color:yellow'>您的房间内光照较强</span>\n自然光可使用窗帘、百叶窗等遮光，根据房间面积选择合适尺寸的遮光设备；人工光可更换低瓦数灯泡或调节灯具亮度，使用灯罩柔化光线。";
+			if(envData.p>0){
+				content +="人应调整窗帘角度避免眩光，避免直视强光"
+			}else{
+				content +="而此时房间无人，可将窗帘完全拉上并关闭不必要的强光灯"
+			}
+		}else{
+			content +="\n<span style='font-size:20px;color:#c0d695'>您的房间内照明合适</span>"
+		}
+	}
+	if(envData.u==='study'){
+		if(envData.l<500){
+			content +="\n<span style='font-size:20px;color:yellow'>您的房间内光照较弱</span>\n可增加灯具数量或更换高瓦数灯泡，选择合适的照明布局，";
+			if(envData.p>0){
+				content +="确保活动区域光线充足"
+			}else{
+				content +="而此时房间内无人，因此可关闭大部分灯光，仅留少量夜灯"
+			}
+		}else if(envData.l>1000){
+			content +="\n<span style='font-size:20px;color:yellow'>您的房间内光照较强</span>\n自然光可使用窗帘、百叶窗等遮光，根据房间面积选择合适尺寸的遮光设备；人工光可更换低瓦数灯泡或调节灯具亮度，使用灯罩柔化光线。";
+			if(envData.p>0){
+				content +="人应调整窗帘角度避免眩光，避免直视强光"
+			}else{
+				content +="而此时房间无人，可将窗帘完全拉上并关闭不必要的强光灯"
+			}
+		}else{
+			content +="\n<span style='font-size:20px;color:#c0d695'>您的房间内照明合适</span>"
+		}
+	}
+
+// 二氧化碳浓度测评
+  if (envData.c >= 800) {
+    content += "\n<span style='font-size:20px;color:red'>您的房间内二氧化碳浓度过高</span>";
+	  if(envData.p>0){
+		  content += "\n请立即打开门窗通风换气，若房间面积大且通风不好，可使用新风系统。也可减少人员聚集，适当增加活动空间"
+	  }else{
+		  content +="\n可定时开启新风系统或在合适时间开窗通风，以降低"
+	  }
+  }else if(envData.c < 600 && envData.c>=200){
+	 content += "\n<span style='font-size:20px;color:#c0d695'>您的房间内二氧化碳浓度合适</span>"; 
+  }else if(envData.c <200) {
+	  content +="\n<span style='font-size:20px;color:red'>您的房间内二氧化碳浓度不正常</span>"
+  }else{
+	  content +="\n<span style='font-size:20px;color:yellow'>您的房间内二氧化碳浓度较高</span>";
+	  if(envData.p>0){
+		  content += "\n请打开门窗通风换气，若房间面积大且通风不好，可使用新风系统。也可减少人员聚集，适当增加活动空间"
+	  }else{
+		  content +="\n可定时开启新风系统或在合适时间开窗通风，以降低"
+	  }
+  }
+	
+//人均占地面积测评
+	if(envData.area/envData.p<4){
+		content +="\n<span style='font-size:20px;color:red'>您的房间过于拥挤</span>"
+	}else if (envData.area/envData.p>=7){
+		content +="\n<span style='font-size:20px;color:#ade5fe'>您的活动空间真广阔</span>"
+	}else{
+		content +="\n<span style='font-size:20px;color:#c0d695'>您的房间内人数分配较合适</span>"
+	}
+
+  textElement.innerHTML = content;
+  resizeBox();
+}
+function resizeBox() {
+      const textElement = document.getElementById("dynamic-text");
+      const box = document.querySelector(".floating-box");
+
+      // 实时获取文本高度 + 内边距补偿
+      const newHeight = textElement.scrollHeight + 40; 
+      box.style.height = newHeight + "px";
+    }
+window.onload = resizeBox;
+
+    // 监听文本变化（现代浏览器支持）
+    const observer = new MutationObserver(resizeBox);
+    observer.observe(document.getElementById("dynamic-text"), {
+      childList: true,  // 观察子节点变化
+      subtree: true,    // 观察所有后代
+      characterData: true // 观察文本内容
+    });
+	
+</script>
+</body>
+</html>

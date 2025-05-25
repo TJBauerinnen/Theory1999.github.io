@@ -1,0 +1,45 @@
+@charset "utf-8";
+*{pedding:4vw;
+	margin:auto
+}
+header{
+	background-color: #2A2F33;
+	height: 60px;
+    width:100vw;
+}
+header h3{
+	line-height: 60px;
+	position:relative;
+	left:10px
+}
+.index{
+	position:absolute;
+	right:10%;
+	top:20px;
+	text-decoration: none;
+}
+.book{
+	position:absolute;
+	right:3%;
+	top:20px;
+	text-decoration: none;
+}
+body{
+    background-image: url("背景图（处理）.jpg");
+    height: 100vh;
+    backgroud-position:center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #F0F8FF;
+}
+header a{
+	text-decoration: none;
+	padding:16px;
+}
+header a:hover{
+	background-color:#212528;
+	transition:background 0.35s;
+}
+header a:active{
+	color:aliceblue;
+}
